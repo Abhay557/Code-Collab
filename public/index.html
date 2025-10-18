@@ -105,29 +105,29 @@
                 <div class="flex items-center gap-4">
                      <h1 class="text-2xl font-bold text-indigo-400">Code Collab</h1>
                      <div class="text-gray-400">
-                        <span class="font-mono bg-gray-700 px-3 py-1 rounded-md text-sm">
-                            Room ID: <span id="room-id-display" class="font-bold text-indigo-300"></span>
-                        </span>
+                         <span class="font-mono bg-gray-700 px-3 py-1 rounded-md text-sm">
+                             Room ID: <span id="room-id-display" class="font-bold text-indigo-300"></span>
+                         </span>
                      </div>
                 </div>
                 <div class="flex items-center gap-4">
                      <div class="flex items-center gap-2 text-sm" title="Participants">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
-                            <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
-                        </svg>
-                        <span id="participants-count" class="font-bold text-gray-200">0</span>
-                    </div>
-                    <div id="participants-list" class="flex items-center gap-2 text-sm text-gray-300"></div>
-                    <button id="leave-room-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 text-sm">
-                        Leave Room
-                    </button>
+                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                             <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
+                         </svg>
+                         <span id="participants-count" class="font-bold text-gray-200">0</span>
+                     </div>
+                     <div id="participants-list" class="flex items-center gap-2 text-sm text-gray-300"></div>
+                     <button id="leave-room-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 text-sm">
+                         Leave Room
+                     </button>
                 </div>
             </header>
 
             <!-- Main Content: Editor Panels + Output -->
             <div class="flex-grow grid grid-cols-1 md:grid-cols-2 gap-2 p-2 h-[calc(100vh-64px)]">
                 <!-- Left Panel: Editors + Console -->
-                <div class="flex flex-col gap-2 h-full">
+                <div class="grid grid-rows-4 gap-2 h-full">
                     <!-- HTML Section -->
                     <div class="flex flex-col bg-gray-800 rounded-lg overflow-hidden">
                         <button class="section-toggle-btn bg-gray-900 px-4 py-2 text-sm font-semibold text-gray-300 flex justify-between items-center w-full focus:outline-none">
@@ -197,7 +197,10 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, arrayUnion, arrayRemove, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        
+
+
+              // Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyCP_g01qPZJl7__le9G8ENwjQQTV0FqGy0",
   authDomain: "login-system-339d5.firebaseapp.com",
@@ -210,7 +213,6 @@ const firebaseConfig = {
 };
 
 const appId = 'default-collab-editor'; // You can leave this as is.
-
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
@@ -364,6 +366,10 @@ const appId = 'default-collab-editor'; // You can leave this as is.
         }
         
         createRoomBtn.addEventListener('click', async () => {
+            if (!currentUser) {
+                showNotification("Still connecting... Please try again in a moment.");
+                return;
+            }
             const name = await askForName('Enter Your Name to Create a Room');
             if (!name) return;
             
@@ -394,41 +400,45 @@ const appId = 'default-collab-editor'; // You can leave this as is.
         });
 
         async function handleJoinRoom(roomId) {
+             if (!currentUser) {
+                showNotification("Still connecting... Please try again in a moment.");
+                return;
+            }
              const roomRef = doc(db, `artifacts/${appId}/public/data/rooms`, roomId);
              try {
-                const roomSnap = await getDoc(roomRef);
+                 const roomSnap = await getDoc(roomRef);
 
-                if (!roomSnap.exists()) {
-                    showNotification("Room not found!");
-                    window.location.hash = '';
-                    return;
-                }
-                
-                const roomData = roomSnap.data();
-                const isAlreadyIn = roomData.participants.some(p => p.uid === currentUser.uid);
+                 if (!roomSnap.exists()) {
+                     showNotification("Room not found!");
+                     window.location.hash = '';
+                     return;
+                 }
+                 
+                 const roomData = roomSnap.data();
+                 const isAlreadyIn = roomData.participants.some(p => p.uid === currentUser.uid);
 
-                if (roomData.participants.length >= 6 && !isAlreadyIn) {
-                    showNotification("This room is full.");
-                    window.location.hash = '';
-                    return;
-                }
-                
-                const name = await askForName('Enter Your Name to Join');
-                if (!name) { window.location.hash = ''; return; }
+                 if (roomData.participants.length >= 6 && !isAlreadyIn) {
+                     showNotification("This room is full.");
+                     window.location.hash = '';
+                     return;
+                 }
+                 
+                 const name = await askForName('Enter Your Name to Join');
+                 if (!name) { window.location.hash = ''; return; }
 
-                localUser = { uid: currentUser.uid, name: name };
-                
-                if (!isAlreadyIn) {
-                    await updateDoc(roomRef, { participants: arrayUnion(localUser) });
-                }
-                
-                window.location.hash = roomId;
-                enterEditor(roomId, roomRef);
+                 localUser = { uid: currentUser.uid, name: name };
+                 
+                 if (!isAlreadyIn) {
+                     await updateDoc(roomRef, { participants: arrayUnion(localUser) });
+                 }
+                 
+                 window.location.hash = roomId;
+                 enterEditor(roomId, roomRef);
 
              } catch (error) {
-                 console.error("Error joining room:", error);
-                 showNotification("Could not join the room.");
-                 window.location.hash = '';
+                  console.error("Error joining room:", error);
+                  showNotification("Could not join the room.");
+                  window.location.hash = '';
              }
         }
 
@@ -482,8 +492,8 @@ const appId = 'default-collab-editor'; // You can leave this as is.
 
         function updateIframe() {
              const consoleScript = `<script>const formatArg=(arg)=>{if(arg instanceof Error){return arg.stack||arg.message}if(typeof arg==='object'&&arg!==null){try{return JSON.stringify(arg)}catch(e){return'[Unserializable Object]'}}return String(arg)};const overrideConsole=(method,type)=>{const original=console[method];console[method]=(...args)=>{window.parent.postMessage({source:'iframe-console',type:type,message:args.map(formatArg).join(' ')},'*');original.apply(console,args)}};overrideConsole('log','log');overrideConsole('error','error');overrideConsole('warn','warn');overrideConsole('info','info');window.addEventListener('error',(e)=>{window.parent.postMessage({source:'iframe-console',type:'error',message:e.message},'*')});<\/script>`;
-            const iframeContent = `<html><head><style>${cssEditor.value}<\/style>${consoleScript}<\/head><body>${htmlEditor.value}<script>try {${jsEditor.value}} catch (e) {console.error(e);}<\/script><\/body><\/html>`;
-            outputFrame.srcdoc = iframeContent;
+             const iframeContent = `<html><head><style>${cssEditor.value}<\/style>${consoleScript}<\/head><body>${htmlEditor.value}<script>try {${jsEditor.value}} catch (e) {console.error(e);}<\/script><\/body><\/html>`;
+             outputFrame.srcdoc = iframeContent;
         }
 
         function handleConsoleMessage(event) {
@@ -560,6 +570,4 @@ const appId = 'default-collab-editor'; // You can leave this as is.
     </script>
 </body>
 </html>
-
-
 
