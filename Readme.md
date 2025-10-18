@@ -1,7 +1,7 @@
 # Code Collab
 *A free, real-time collaborative code editor for pair programming, interviews, and teaching. No sign-up required—just create a room, share the link, and start coding together instantly.*
 
-[Live App](codecollabwars.web.app/)
+[Live App](https://codecollabwars.web.app/)
 
 ![Preview](/preview.png)
 
