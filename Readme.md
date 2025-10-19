@@ -4,6 +4,7 @@
 [Live App](https://codecollabwars.web.app/)
 
 ![Preview](/preview.png)
+![Preview](/preview2.png)
 
 ## Key Features
 
