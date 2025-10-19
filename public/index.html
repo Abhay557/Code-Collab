@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Code Collab - Real-time Collaborative IDE</title>
+    <title>Code Collab- Real-time Collaborative IDE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
 
    <meta name="description" content="Code Collab is a free, real-time collaborative code editor for pair programming, interviews, and teaching. Share a link and start coding together instantly.">
    <meta name="keywords" content="real-time editor, collaborative coding, pair programming, live code editor, html css js editor, javascript, firebase, open source">
@@ -15,7 +17,7 @@
    <meta property="og:url" content="https://www.linkedin.com/posts/abhay557_webdevelopment-opensource-firebase-activity-7385344279336067073-6lwO?utm_source=social_share_send&utm_medium=member_desktop_web&rcm=ACoAAEW4kzUBoGX2tCAhI_tvW_kfJtgr1f106kw">
    <meta property="og:type" content="website">
 
-    <script src="https://cdn.tailwindcss.com"></script>
+
     
     <!-- CodeMirror for Syntax Highlighting -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.css">
@@ -63,16 +65,21 @@
 
         <!-- Home View -->
         <div id="home-view" class="flex-grow flex items-center justify-center p-4">
-            <div class="w-full max-w-md bg-gray-800 rounded-2xl shadow-lg p-8 space-y-8">
+            <div class="w-full max-w-md bg-gray-800 rounded-2xl shadow-lg p-8 space-y-6">
                 <div>
                     <h1 class="text-4xl font-bold text-center text-indigo-400">Code Collab</h1>
                     <p class="text-center text-gray-400 mt-2">A real-time IDE to code and chat.</p>
                 </div>
-                <button id="create-room-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Create New Room</button>
-                <div class="relative"><div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-600"></div></div><div class="relative flex justify-center text-sm"><span class="px-2 bg-gray-800 text-gray-400">Or Join a Room</span></div></div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <button id="create-private-room-btn" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Create Private Room</button>
+                    <button id="create-public-room-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Create Public Room</button>
+                </div>
+                <div class="relative"><div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-600"></div></div><div class="relative flex justify-center text-sm"><span class="px-2 bg-gray-800 text-gray-400">Or</span></div></div>
+                <button id="join-random-btn" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Join a Random Public Room</button>
+                <div class="relative"><div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-600"></div></div><div class="relative flex justify-center text-sm"><span class="px-2 bg-gray-800 text-gray-400">Or</span></div></div>
                 <div class="space-y-4">
                     <input type="text" id="room-id-input" placeholder="Enter Room ID" class="w-full bg-gray-700 border-gray-600 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <button id="join-room-btn" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Join Room</button>
+                    <button id="join-room-btn" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Join with ID</button>
                 </div>
             </div>
         </div>
@@ -115,74 +122,237 @@
                 <div id="chat-panel" class="flex-col bg-gray-800 rounded-lg overflow-hidden transition-all duration-300" style="flex-basis: 0; display: none;">
                     <div class="bg-gray-900 px-4 py-2 text-sm font-semibold text-gray-300 flex-shrink-0">Room Chat</div>
                     <div id="chat-messages" class="flex-grow p-4 overflow-y-auto space-y-4"></div>
-                    <form id="chat-form" class="p-2 border-t border-gray-700"><div class="flex gap-2"><input type="text" id="chat-input" placeholder="Type a message..." class="flex-grow bg-gray-700 border-gray-600 text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm"><button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold p-2 rounded-lg"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.428A1 1 0 009.894 15V4.106A1 1 0 0010.894 2.553z" /></svg></button></div></form>
+                    <form id="chat-form" class="p-2 border-t border-gray-700"><div class="flex gap-2"><input type="text" id="chat-input" placeholder="Type a message..." class="flex-grow bg-gray-700 border-gray-600 text-white px-3 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"><button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold p-2 rounded-lg"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.428A1 1 0 009.894 15V4.106A1 1 0 0010.894 2.553z" /></svg></button></div></form>
                 </div>
             </div>
         </div>
 
-        <div id="name-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"><div class="bg-gray-800 rounded-2xl shadow-lg p-8 w-full max-w-sm space-y-4"><h2 id="modal-title" class="text-2xl font-bold text-center">Enter Your Name</h2><input type="text" id="name-input" placeholder="Your Name" class="w-full bg-gray-700 border-gray-600 text-white px-4 py-3 rounded-lg"><div class="flex gap-4"><button id="modal-cancel" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg">Cancel</button><button id="modal-confirm" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg">Confirm</button></div></div></div>
+        <div id="name-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"><div class="bg-gray-800 rounded-2xl shadow-lg p-8 w-full max-w-sm space-y-4"><h2 id="modal-title" class="text-2xl font-bold text-center">Enter Your Name</h2><input type="text" id="name-input" placeholder="Your Name" class="w-full bg-gray-700 border-gray-600 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"><div class="flex gap-4"><button id="modal-cancel" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg">Cancel</button><button id="modal-confirm" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg">Confirm</button></div></div></div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, arrayUnion, arrayRemove, serverTimestamp, collection, addDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, arrayUnion, arrayRemove, serverTimestamp, collection, addDoc, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
          const firebaseConfig = {
-         // add yours
+  // add yours
+};
+
+const appId = 'default-collab-editor'; // You can leave this as is.
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const dom = { 
+            home: document.getElementById('home-view'), 
+            editor: document.getElementById('editor-view'), 
+            createPrivateBtn: document.getElementById('create-private-room-btn'), 
+            createPublicBtn: document.getElementById('create-public-room-btn'), 
+            joinRandomBtn: document.getElementById('join-random-btn'), 
+            joinBtn: document.getElementById('join-room-btn'), 
+            roomIdInput: document.getElementById('room-id-input'), 
+            roomIdDisplay: document.getElementById('room-id-display'), 
+            participants: document.getElementById('participants-list'), 
+            leaveBtn: document.getElementById('leave-room-btn'), 
+            output: document.getElementById('output-frame'), 
+            notification: document.getElementById('notification'), 
+            console: document.getElementById('console-output'), 
+            clearConsoleBtn: document.getElementById('clear-console-btn'), 
+            modal: document.getElementById('name-modal'), 
+            modalTitle: document.getElementById('modal-title'), 
+            nameInput: document.getElementById('name-input'), 
+            modalConfirm: document.getElementById('modal-confirm'), 
+            modalCancel: document.getElementById('modal-cancel'), 
+            chatPanel: document.getElementById('chat-panel'), 
+            chatMessages: document.getElementById('chat-messages'), 
+            chatForm: document.getElementById('chat-form'), 
+            chatInput: document.getElementById('chat-input'), 
+            toggleChatBtn: document.getElementById('toggle-chat-btn'), 
+            editorPanel: document.getElementById('editor-panel'), 
+            outputPanel: document.getElementById('output-panel'), 
+            resizer: document.getElementById('resizer'), 
+            downloadBtn: document.getElementById('download-btn'), 
+            popoutBtn: document.getElementById('popout-btn'), 
+            contentWrapper: document.getElementById('content-wrapper') 
         };
-
-        const appId = 'default-collab-editor'; // You can leave this as is.
-
-        const app = initializeApp(firebaseConfig), auth = getAuth(app), db = getFirestore(app);
-
-        const dom = { home: document.getElementById('home-view'), editor: document.getElementById('editor-view'), createBtn: document.getElementById('create-room-btn'), joinBtn: document.getElementById('join-room-btn'), roomIdInput: document.getElementById('room-id-input'), roomIdDisplay: document.getElementById('room-id-display'), participants: document.getElementById('participants-list'), leaveBtn: document.getElementById('leave-room-btn'), output: document.getElementById('output-frame'), notification: document.getElementById('notification'), console: document.getElementById('console-output'), clearConsoleBtn: document.getElementById('clear-console-btn'), modal: document.getElementById('name-modal'), modalTitle: document.getElementById('modal-title'), nameInput: document.getElementById('name-input'), modalConfirm: document.getElementById('modal-confirm'), modalCancel: document.getElementById('modal-cancel'), chatPanel: document.getElementById('chat-panel'), chatMessages: document.getElementById('chat-messages'), chatForm: document.getElementById('chat-form'), chatInput: document.getElementById('chat-input'), toggleChatBtn: document.getElementById('toggle-chat-btn'), editorPanel: document.getElementById('editor-panel'), outputPanel: document.getElementById('output-panel'), resizer: document.getElementById('resizer'), downloadBtn: document.getElementById('download-btn'), popoutBtn: document.getElementById('popout-btn') };
         let currentUser, currentRoomId, localUser, debounceTimer, unsubscribeRoom, unsubscribeChat, htmlEditor, cssEditor, jsEditor;
         let isChatOpen = false;
 
-        onAuthStateChanged(auth, u => u ? (currentUser = u, initializeAppLogic()) : signIn());
-        async function signIn() { try { if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) await signInWithCustomToken(auth, __initial_auth_token); else await signInAnonymously(auth); } catch (e) { console.error("Auth failed:", e); } }
-        function showView(v) { dom.home.style.display = v==='home'?'flex':'none'; dom.editor.style.display = v==='editor'?'flex':'none'; }
-        function showNotification(m, t='error') { dom.notification.textContent=m; dom.notification.className=`fixed top-5 right-5 text-white py-2 px-4 rounded-lg shadow-lg z-50 bg-${t==='error'?'red':(t==='info'?'blue':'green')}-500`; dom.notification.style.display='block'; setTimeout(()=>dom.notification.style.display='none',3000); }
+        onAuthStateChanged(auth, user => {
+            if (user) {
+                currentUser = user;
+                initializeAppLogic();
+            } else {
+                signIn();
+            }
+        });
+
+        async function signIn() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (e) {
+                console.error("Authentication failed:", e);
+                showNotification("Could not connect to the service.");
+            }
+        }
+
+        function showView(viewName) {
+            dom.home.style.display = viewName === 'home' ? 'flex' : 'none';
+            dom.editor.style.display = viewName === 'editor' ? 'flex' : 'none';
+        }
+
+        function showNotification(message, type = 'error') {
+            dom.notification.textContent = message;
+            dom.notification.className = `fixed top-5 right-5 text-white py-2 px-4 rounded-lg shadow-lg z-50 bg-${type === 'error' ? 'red' : (type === 'info' ? 'blue' : 'green')}-500`;
+            dom.notification.style.display = 'block';
+            setTimeout(() => { dom.notification.style.display = 'none'; }, 3000);
+        }
 
         function askForName(title) {
             return new Promise(resolve => {
-                dom.modalTitle.textContent = title; dom.nameInput.value = ''; dom.modal.style.display = 'flex';
-                const onConfirm = () => { if (dom.nameInput.value.trim()) { cleanup(); resolve(dom.nameInput.value.trim()); } };
-                const onCancel = () => { cleanup(); resolve(null); };
-                const onKeypress = e => { if (e.key === 'Enter') onConfirm(); };
-                const cleanup = () => { dom.modal.style.display = 'none'; dom.modalConfirm.removeEventListener('click',onConfirm); dom.modalCancel.removeEventListener('click',onCancel); dom.nameInput.removeEventListener('keypress',onKeypress); };
-                dom.modalConfirm.addEventListener('click', onConfirm); dom.modalCancel.addEventListener('click', onCancel); dom.nameInput.addEventListener('keypress', onKeypress); dom.nameInput.focus();
+                dom.modalTitle.textContent = title;
+                dom.nameInput.value = '';
+                dom.modal.style.display = 'flex';
+                
+                const onConfirm = () => {
+                    if (dom.nameInput.value.trim()) {
+                        cleanup();
+                        resolve(dom.nameInput.value.trim());
+                    }
+                };
+                
+                const onCancel = () => {
+                    cleanup();
+                    resolve(null);
+                };
+
+                const onKeypress = e => {
+                    if (e.key === 'Enter') {
+                        onConfirm();
+                    }
+                };
+
+                const cleanup = () => {
+                    dom.modal.style.display = 'none';
+                    dom.modalConfirm.removeEventListener('click', onConfirm);
+                    dom.modalCancel.removeEventListener('click', onCancel);
+                    dom.nameInput.removeEventListener('keypress', onKeypress);
+                };
+
+                dom.modalConfirm.addEventListener('click', onConfirm);
+                dom.modalCancel.addEventListener('click', onCancel);
+                dom.nameInput.addEventListener('keypress', onKeypress);
+                dom.nameInput.focus();
             });
         }
 
         function initializeAppLogic() {
             const roomId = window.location.hash.substring(1);
-            if (roomId) handleJoinRoom(roomId); else showView('home');
-            window.addEventListener('hashchange', () => { if (!window.location.hash.substring(1)) leaveRoom(); });
+            if (roomId) {
+                handleJoinRoom(roomId);
+            } else {
+                showView('home');
+            }
+            window.addEventListener('hashchange', () => {
+                if (!window.location.hash.substring(1)) {
+                    leaveRoom();
+                }
+            });
             initResizing();
         }
         
-        dom.createBtn.addEventListener('click', async () => {
+        const handleCreateRoom = async (isPublic) => {
             if (!currentUser) return showNotification("Connecting...");
-            const name = await askForName('Enter Your Name to Create Room'); if (!name) return;
+            const name = await askForName(`Enter Your Name to Create ${isPublic ? 'Public' : 'Private'} Room`);
+            if (!name) return;
+            
             localUser = { uid: currentUser.uid, name };
             const newRoomId = Math.random().toString(36).substring(2, 9);
             const roomRef = doc(db, `artifacts/${appId}/public/data/rooms`, newRoomId);
-            try { await setDoc(roomRef, { html: `<h1>Edit me!</h1>`, css: `body { font-family: sans-serif; }`, js: `console.log("Welcome!");`, participants: [localUser], createdAt: serverTimestamp() }); window.location.hash=newRoomId; enterEditor(newRoomId, roomRef); }
-            catch (e) { console.error("Create room error:", e); showNotification("Could not create room."); }
+
+            try {
+                await setDoc(roomRef, {
+                    html: `<h1>Welcome!</h1>\n<p>Start coding and see your changes live.</p>`,
+                    css: `body {\n  font-family: sans-serif;\n  padding: 1em;\n}`,
+                    js: `console.log("Hello from your new room!");`,
+                    participants: [localUser],
+                    createdAt: serverTimestamp(),
+                    isPublic
+                });
+                window.location.hash = newRoomId;
+                enterEditor(newRoomId, roomRef);
+            } catch (e) {
+                console.error("Create room error:", e);
+                showNotification("Could not create room.");
+            }
+        };
+        
+        dom.createPrivateBtn.addEventListener('click', () => handleCreateRoom(false));
+        dom.createPublicBtn.addEventListener('click', () => handleCreateRoom(true));
+        
+        dom.joinRandomBtn.addEventListener('click', async () => {
+            if (!currentUser) return showNotification("Connecting...");
+            showNotification("Finding a public room...", "info");
+            
+            const roomsRef = collection(db, `artifacts/${appId}/public/data/rooms`);
+            const q = query(roomsRef, where("isPublic", "==", true));
+            
+            try {
+                const querySnapshot = await getDocs(q);
+                const availableRooms = [];
+                querySnapshot.forEach(doc => {
+                    if (doc.data().participants.length < 6) { // Max 6 participants
+                        availableRooms.push(doc.id);
+                    }
+                });
+
+                if (availableRooms.length > 0) {
+                    const randomRoomId = availableRooms[Math.floor(Math.random() * availableRooms.length)];
+                    handleJoinRoom(randomRoomId);
+                } else {
+                    showNotification("No public rooms available. Why not create one?", "info");
+                }
+            } catch (error) {
+                console.error("Error finding random room:", error);
+                showNotification("Could not find a room. Please try again.");
+            }
         });
-        dom.joinBtn.addEventListener('click', () => { const r = dom.roomIdInput.value.trim(); if (r) handleJoinRoom(r); else showNotification("Please enter a Room ID."); });
+
+        dom.joinBtn.addEventListener('click', () => {
+            const roomId = dom.roomIdInput.value.trim();
+            if (roomId) handleJoinRoom(roomId);
+            else showNotification("Please enter a Room ID.");
+        });
 
         async function handleJoinRoom(roomId) {
             if (!currentUser) return showNotification("Connecting...");
             const roomRef = doc(db, `artifacts/${appId}/public/data/rooms`, roomId);
             try {
-                const roomSnap = await getDoc(roomRef); if (!roomSnap.exists()) { showNotification("Room not found!"); window.location.hash = ''; return; }
-                const name = await askForName('Enter Your Name to Join'); if (!name) { window.location.hash = ''; return; }
+                const roomSnap = await getDoc(roomRef);
+                if (!roomSnap.exists()) {
+                    showNotification("Room not found!");
+                    window.location.hash = '';
+                    return;
+                }
+                const name = await askForName('Enter Your Name to Join');
+                if (!name) {
+                    window.location.hash = '';
+                    return;
+                }
                 localUser = { uid: currentUser.uid, name: name };
-                await updateDoc(roomRef, { participants: arrayUnion(localUser) }); window.location.hash = roomId; enterEditor(roomId, roomRef);
-            } catch (e) { console.error("Join room error:", e); showNotification("Could not join room."); window.location.hash = ''; }
+                await updateDoc(roomRef, { participants: arrayUnion(localUser) });
+                window.location.hash = roomId;
+                enterEditor(roomId, roomRef);
+            } catch (e) {
+                console.error("Join room error:", e);
+                showNotification("Could not join room.");
+                window.location.hash = '';
+            }
         }
 
         function initializeEditors() {
@@ -193,41 +363,154 @@
         }
 
         function enterEditor(roomId, roomRef) {
-            currentRoomId = roomId; showView('editor'); dom.roomIdDisplay.textContent = roomId; if (!htmlEditor) initializeEditors();
-            unsubscribeRoom = onSnapshot(roomRef, d => { if(d.exists()){ const data=d.data(); if(!htmlEditor.hasFocus())htmlEditor.setValue(data.html); if(!cssEditor.hasFocus())cssEditor.setValue(data.css); if(!jsEditor.hasFocus())jsEditor.setValue(data.js); updateIframe();updateParticipants(data.participants);} else {showNotification("Room closed.","info");leaveRoom();}});
+            currentRoomId = roomId;
+            showView('editor');
+            dom.roomIdDisplay.textContent = roomId;
+            if (!htmlEditor) initializeEditors();
+
+            unsubscribeRoom = onSnapshot(roomRef, d => {
+                if (d.exists()) {
+                    const data = d.data();
+                    if (!htmlEditor.hasFocus()) htmlEditor.setValue(data.html);
+                    if (!cssEditor.hasFocus()) cssEditor.setValue(data.css);
+                    if (!jsEditor.hasFocus()) jsEditor.setValue(data.js);
+                    updateIframe();
+                    updateParticipants(data.participants);
+                } else {
+                    showNotification("Room was closed.", "info");
+                    leaveRoom();
+                }
+            });
+            
             const msgRef = collection(db, `artifacts/${appId}/public/data/rooms`, roomId, 'messages');
-            unsubscribeChat = onSnapshot(query(msgRef, orderBy("timestamp")), s => { dom.chatMessages.innerHTML=''; s.forEach(d => renderMessage(d.data())); dom.chatMessages.scrollTop = dom.chatMessages.scrollHeight; });
-            htmlEditor.on('change', () => handleCodeChange('html', htmlEditor.getValue())); cssEditor.on('change', () => handleCodeChange('css', cssEditor.getValue())); jsEditor.on('change', () => handleCodeChange('js', jsEditor.getValue()));
-            dom.chatForm.addEventListener('submit', handleSendMessage); dom.leaveBtn.addEventListener('click', leaveRoom); dom.clearConsoleBtn.addEventListener('click', () => dom.console.innerHTML = ''); dom.toggleChatBtn.addEventListener('click', toggleChat); dom.downloadBtn.addEventListener('click', handleDownload); dom.popoutBtn.addEventListener('click', handlePopout);
-            window.addEventListener('message', handleConsoleMessage); window.addEventListener('beforeunload', handleBeforeUnload);
+            unsubscribeChat = onSnapshot(query(msgRef, orderBy("timestamp")), s => {
+                dom.chatMessages.innerHTML = '';
+                s.forEach(d => renderMessage(d.data()));
+                dom.chatMessages.scrollTop = dom.chatMessages.scrollHeight;
+            });
+            
+            htmlEditor.on('change', () => handleCodeChange('html', htmlEditor.getValue()));
+            cssEditor.on('change', () => handleCodeChange('css', cssEditor.getValue()));
+            jsEditor.on('change', () => handleCodeChange('js', jsEditor.getValue()));
+            
+            dom.chatForm.addEventListener('submit', handleSendMessage);
+            dom.leaveBtn.addEventListener('click', leaveRoom);
+            dom.clearConsoleBtn.addEventListener('click', () => dom.console.innerHTML = '');
+            dom.toggleChatBtn.addEventListener('click', toggleChat);
+            dom.downloadBtn.addEventListener('click', handleDownload);
+            dom.popoutBtn.addEventListener('click', handlePopout);
+            
+            window.addEventListener('message', handleConsoleMessage);
+            window.addEventListener('beforeunload', handleBeforeUnload);
         }
 
-        const handleSendMessage = async(e) => { e.preventDefault(); const text = dom.chatInput.value.trim(); if(!text)return; try{await addDoc(collection(db,`artifacts/${appId}/public/data/rooms`,currentRoomId,'messages'),{text,senderName:localUser.name,senderUid:localUser.uid,timestamp:serverTimestamp()}); dom.chatInput.value='';}catch(e){showNotification("Could not send.");}};
-        function renderMessage(d){ const me=d.senderUid===currentUser.uid; const mdiv=document.createElement('div'); mdiv.className=`flex flex-col ${me?'items-end':'items-start'}`; const b=document.createElement('div'); b.className=`px-3 py-2 rounded-lg max-w-xs ${me?'bg-indigo-600':'bg-gray-600'}`; if(!me){const s=document.createElement('div');s.className='text-xs font-bold text-indigo-300';s.textContent=d.senderName;b.appendChild(s);} const t=document.createElement('p');t.className='text-sm break-words';t.textContent=d.text; b.appendChild(t);mdiv.appendChild(b);dom.chatMessages.appendChild(mdiv); }
-        function handleCodeChange(lang, v){ clearTimeout(debounceTimer); debounceTimer=setTimeout(() => { if(currentRoomId) updateDoc(doc(db,`artifacts/${appId}/public/data/rooms`,currentRoomId),{[lang]:v});}, 500); }
-        function updateIframe(){ if(!htmlEditor)return; const consoleScript=`<script>const f=a=>{if(a instanceof Error)return a.stack||a.message;if(typeof a==='object'&&a!==null)try{return JSON.stringify(a)}catch(e){return'[Unserializable]'}return String(a)};const o=(m,t)=>{const c=console[m];console[m]=(...a)=>{window.parent.postMessage({s:'iframe-console',t,m:a.map(f).join(' ')},'*');c.apply(console,a)}};['log','error','warn','info'].forEach(m=>o(m,m));window.addEventListener('error',e=>window.parent.postMessage({s:'iframe-console',t:'error',m:e.message},'*'));<\/script>`; const content=`<html><head><style>${cssEditor.getValue()}<\/style>${consoleScript}<\/head><body>${htmlEditor.getValue()}<script>try{${jsEditor.getValue()}}catch(e){console.error(e);}<\/script><\/body><\/html>`; dom.output.srcdoc = content; }
-        function handleConsoleMessage({source, data}){ if(source!==dom.output.contentWindow || data.s!=='iframe-console')return; const l=document.createElement('div');l.textContent=data.m; l.className=`console-${data.t}`; l.innerHTML=`<span class="text-gray-500 mr-2">&gt;</span>`+l.innerHTML; dom.console.appendChild(l);dom.console.scrollTop=dom.console.scrollHeight;}
-        function updateParticipants(p){ dom.participants.innerHTML=''; p.forEach(u=>{const e=document.createElement('div');e.className='flex items-center gap-2 bg-gray-700 px-3 py-1 rounded-full';const a=document.createElement('div');a.className='w-5 h-5 rounded-full';a.style.backgroundColor=stringToColor(u.uid); e.append(a, u.name); dom.participants.appendChild(e);});}
+        const handleSendMessage = async (e) => {
+            e.preventDefault();
+            const text = dom.chatInput.value.trim();
+            if (!text) return;
+            try {
+                const messagesRef = collection(db, `artifacts/${appId}/public/data/rooms`, currentRoomId, 'messages');
+                await addDoc(messagesRef, {
+                    text,
+                    senderName: localUser.name,
+                    senderUid: localUser.uid,
+                    timestamp: serverTimestamp()
+                });
+                dom.chatInput.value = '';
+            } catch (e) {
+                console.error("Message send error:", e);
+                showNotification("Could not send message.");
+            }
+        };
+
+        function renderMessage(data) {
+            const isMe = data.senderUid === currentUser.uid;
+            const msgContainer = document.createElement('div');
+            msgContainer.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'}`;
+            const bubble = document.createElement('div');
+            bubble.className = `px-3 py-2 rounded-lg max-w-xs ${isMe ? 'bg-indigo-600' : 'bg-gray-600'}`;
+            if (!isMe) {
+                const sender = document.createElement('div');
+                sender.className = 'text-xs font-bold text-indigo-300';
+                sender.textContent = data.senderName;
+                bubble.appendChild(sender);
+            }
+            const msgText = document.createElement('p');
+            msgText.className = 'text-sm break-words';
+            msgText.textContent = data.text;
+            bubble.appendChild(msgText);
+            msgContainer.appendChild(bubble);
+            dom.chatMessages.appendChild(msgContainer);
+        }
+
+        function handleCodeChange(lang, value) {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                if (currentRoomId) {
+                    const roomRef = doc(db, `artifacts/${appId}/public/data/rooms`, currentRoomId);
+                    updateDoc(roomRef, { [lang]: value });
+                }
+            }, 500);
+        }
+
+        function updateIframe() {
+            if (!htmlEditor || !cssEditor || !jsEditor) return;
+            const consoleScript = `<script>const f=a=>{if(a instanceof Error)return a.stack||a.message;if(typeof a==='object'&&a!==null)try{return JSON.stringify(a)}catch(e){return'[Unserializable]'}return String(a)};const o=(m,t)=>{const c=console[m];console[m]=(...a)=>{window.parent.postMessage({s:'iframe-console',t,m:a.map(f).join(' ')},'*');c.apply(console,a)}};['log','error','warn','info'].forEach(m=>o(m,m));window.addEventListener('error',e=>window.parent.postMessage({s:'iframe-console',t:'error',m:e.message},'*'));<\/script>`;
+            const content = `<html><head><style>${cssEditor.getValue()}<\/style>${consoleScript}<\/head><body>${htmlEditor.getValue()}<script>try{${jsEditor.getValue()}}catch(e){console.error(e);}<\/script><\/body><\/html>`;
+            dom.output.srcdoc = content;
+        }
+
+        function handleConsoleMessage({ source, data }) {
+            if (source !== dom.output.contentWindow || data.s !== 'iframe-console') return;
+            const logEntry = document.createElement('div');
+            logEntry.textContent = data.m;
+            logEntry.className = `console-${data.t}`;
+            logEntry.innerHTML = `<span class="text-gray-500 mr-2">&gt;</span>` + logEntry.innerHTML;
+            dom.console.appendChild(logEntry);
+            dom.console.scrollTop = dom.console.scrollHeight;
+        }
+
+        function updateParticipants(participants) {
+            dom.participants.innerHTML = '';
+            participants.forEach(p => {
+                const pEl = document.createElement('div');
+                pEl.className = 'flex items-center gap-2 bg-gray-700 px-3 py-1 rounded-full';
+                const avatar = document.createElement('div');
+                avatar.className = 'w-5 h-5 rounded-full';
+                avatar.style.backgroundColor = stringToColor(p.uid);
+                pEl.append(avatar, p.name);
+                dom.participants.appendChild(pEl);
+            });
+        }
 
         function toggleChat() {
             isChatOpen = !isChatOpen;
             dom.chatPanel.style.display = isChatOpen ? 'flex' : 'none';
             dom.resizer.style.display = isChatOpen ? 'none' : 'block';
+
             if (isChatOpen) {
-                dom.editorPanel.style.flexBasis = '60%';
-                dom.outputPanel.style.flexBasis = '40%';
-                dom.chatPanel.style.flexBasis = '25%';
-            } else {
+                // Rearrange for chat view
+                dom.contentWrapper.insertBefore(dom.chatPanel, dom.resizer.nextSibling); 
                 dom.editorPanel.style.flexBasis = '50%';
                 dom.outputPanel.style.flexBasis = '50%';
-                dom.chatPanel.style.flexBasis = '0%';
+                dom.chatPanel.style.flexBasis = '300px'; 
+                dom.resizer.style.display = 'none'; 
+            } else {
+                // Restore normal view
+                dom.editorPanel.style.flexBasis = '50%';
+                dom.outputPanel.style.flexBasis = '50%';
+                dom.chatPanel.style.flexBasis = '0px';
+                dom.resizer.style.display = 'block';
             }
             refreshEditors();
         }
 
         function initResizing() {
             let isResizing = false;
-            dom.resizer.addEventListener('mousedown', (e) => { isResizing = true; document.body.style.cursor = 'col-resize'; });
+            dom.resizer.addEventListener('mousedown', (e) => {
+                isResizing = true;
+                document.body.style.cursor = 'col-resize';
+            });
             document.addEventListener('mousemove', (e) => {
                 if (!isResizing || isChatOpen) return;
                 const wrapper = dom.contentWrapper.getBoundingClientRect();
@@ -238,15 +521,19 @@
                     dom.outputPanel.style.flexBasis = `${outputWidth}px`;
                 }
             });
-            document.addEventListener('mouseup', () => { isResizing = false; document.body.style.cursor = 'default'; refreshEditors(); });
+            document.addEventListener('mouseup', () => {
+                isResizing = false;
+                document.body.style.cursor = 'default';
+                refreshEditors();
+            });
         }
 
         async function handleDownload() {
             const zip = new JSZip();
-            zip.file("index.html", htmlEditor.getValue());
+            zip.file("index.html", `<!DOCTYPE html>\n<html>\n<head>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n${htmlEditor.getValue()}\n  <script src="script.js"><\/script>\n</body>\n</html>`);
             zip.file("style.css", cssEditor.getValue());
             zip.file("script.js", jsEditor.getValue());
-            const content = await zip.generateAsync({type:"blob"});
+            const content = await zip.generateAsync({ type: "blob" });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(content);
             link.download = "code-collab-project.zip";
@@ -255,17 +542,53 @@
         }
 
         function handlePopout() {
-            const content=`<html><head><title>Output</title><style>${cssEditor.getValue()}<\/style><\/head><body>${htmlEditor.getValue()}<script>${jsEditor.getValue()}<\/script><\/body><\/html>`;
-            const blob = new Blob([content], {type: 'text/html'});
+            const content = `<html><head><title>Output</title><style>${cssEditor.getValue()}<\/style></head><body>${htmlEditor.getValue()}<script>${jsEditor.getValue()}<\/script></body></html>`;
+            const blob = new Blob([content], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
             window.open(url, '_blank');
         }
         
-        function refreshEditors() { setTimeout(() => { htmlEditor.refresh(); cssEditor.refresh(); jsEditor.refresh(); }, 10); }
+        function refreshEditors() {
+            setTimeout(() => {
+                if (htmlEditor) htmlEditor.refresh();
+                if (cssEditor) cssEditor.refresh();
+                if (jsEditor) jsEditor.refresh();
+            }, 10);
+        }
 
-        async function leaveRoom(){if(currentRoomId&&localUser){try{await updateDoc(doc(db,`artifacts/${appId}/public/data/rooms`,currentRoomId),{participants:arrayRemove(localUser)}); }catch(e){}} if(unsubscribeRoom)unsubscribeRoom();if(unsubscribeChat)unsubscribeChat();unsubscribeRoom=unsubscribeChat=null;currentRoomId=localUser=null;window.location.hash='';window.removeEventListener('beforeunload',handleBeforeUnload);window.removeEventListener('message',handleConsoleMessage);showView('home');}
-        function handleBeforeUnload(){if(currentRoomId&&localUser)leaveRoom();}
-        function stringToColor(s){let h=0;for(let i=0;i<s.length;i++)h=s.charCodeAt(i)+((h<<5)-h);let c='#';for(let i=0;i<3;i++)c+=('00'+((h>>(i*8))&0xFF).toString(16)).substr(-2);return c;}
+        async function leaveRoom() {
+            if (currentRoomId && localUser) {
+                try {
+                    const roomRef = doc(db, `artifacts/${appId}/public/data/rooms`, currentRoomId);
+                    await updateDoc(roomRef, { participants: arrayRemove(localUser) });
+                } catch (e) {
+                    console.error("Error removing participant:", e);
+                }
+            }
+            if (unsubscribeRoom) unsubscribeRoom();
+            if (unsubscribeChat) unsubscribeChat();
+            unsubscribeRoom = unsubscribeChat = null;
+            currentRoomId = localUser = null;
+            window.location.hash = '';
+            window.removeEventListener('beforeunload', handleBeforeUnload);
+            window.removeEventListener('message', handleConsoleMessage);
+            showView('home');
+        }
+
+        function handleBeforeUnload() {
+            if (currentRoomId && localUser) {
+                leaveRoom();
+            }
+        }
+        
+        function stringToColor(s) {
+            let h = 0;
+            if (!s) return '#ffffff';
+            for (let i = 0; i < s.length; i++) h = s.charCodeAt(i) + ((h << 5) - h);
+            let c = '#';
+            for (let i = 0; i < 3; i++) c += ('00' + ((h >> (i * 8)) & 0xFF).toString(16)).substr(-2);
+            return c;
+        }
 
         signIn();
     </script>
