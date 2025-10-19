@@ -3,21 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Code Collab- Real-time Collaborative IDE</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-
-   <meta name="description" content="Code Collab is a free, real-time collaborative code editor for pair programming, interviews, and teaching. Share a link and start coding together instantly.">
-   <meta name="keywords" content="real-time editor, collaborative coding, pair programming, live code editor, html css js editor, javascript, firebase, open source">
-   <meta name="author" content="Abhay557">
+    <title>Code Collab - Real-time Collaborative IDE</title>
 
    <meta property="og:title" content="Code Collab - Real-time Collaborative Editor">
    <meta property="og:description" content="A free, in-browser tool for pair programming and live code sharing. No sign-up required.">
-   <meta property="og:image" content="https://raw.githubusercontent.com/Abhay557/Code-Collab/refs/heads/main/preview.png">
+   <meta property="og:image" content="https://raw.githubusercontent.com/Abhay557/Code-Collab/refs/heads/main/preview2.png">
    <meta property="og:url" content="https://www.linkedin.com/posts/abhay557_webdevelopment-opensource-firebase-activity-7385344279336067073-6lwO?utm_source=social_share_send&utm_medium=member_desktop_web&rcm=ACoAAEW4kzUBoGX2tCAhI_tvW_kfJtgr1f106kw">
    <meta property="og:type" content="website">
 
+    
 
+    <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- CodeMirror for Syntax Highlighting -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.15/codemirror.min.css">
@@ -63,6 +59,8 @@
     <!-- App Container -->
     <div id="app" class="min-h-screen flex flex-col">
 
+
+ 
         <!-- Home View -->
         <div id="home-view" class="flex-grow flex items-center justify-center p-4">
             <div class="w-full max-w-md bg-gray-800 rounded-2xl shadow-lg p-8 space-y-6">
@@ -80,7 +78,7 @@
                 <div class="space-y-4">
                     <input type="text" id="room-id-input" placeholder="Enter Room ID" class="w-full bg-gray-700 border-gray-600 text-white px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     <button id="join-room-btn" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-4 rounded-lg transition duration-300">Join with ID</button>
-                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 border-t border-gray-700">
+                 <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 border-t border-gray-700">
                     <a href="https://github.com/Abhay557/Code-Collab" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto flex items-center justify-center gap-2 text-white bg-gray-700 hover:bg-gray-600 font-semibold py-2 px-4 rounded-lg transition-colors duration-300">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.168 6.839 9.492.5.092.682-.217.682-.482 0-.237-.009-.868-.014-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.031-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.203 2.398.1 2.651.64.7 1.03 1.595 1.03 2.688 0 3.848-2.338 4.695-4.566 4.942.359.308.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.001 10.001 0 0022 12c0-5.523-4.477-10-10-10z" clip-rule="evenodd" /></svg>
                         GitHub
@@ -91,6 +89,7 @@
                         </svg>
                         Discord
                     </a>
+                </div>
                 </div>
             </div>
         </div>
@@ -146,11 +145,13 @@
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot, arrayUnion, arrayRemove, serverTimestamp, collection, addDoc, query, where, getDocs, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-         const firebaseConfig = {
-  // add yours
+        
+        const firebaseConfig = { 
+            // add yours
 };
 
 const appId = 'default-collab-editor'; // You can leave this as is.
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
@@ -379,6 +380,7 @@ const appId = 'default-collab-editor'; // You can leave this as is.
             dom.roomIdDisplay.textContent = roomId;
             if (!htmlEditor) initializeEditors();
 
+            // Room data listener
             unsubscribeRoom = onSnapshot(roomRef, d => {
                 if (d.exists()) {
                     const data = d.data();
@@ -393,17 +395,20 @@ const appId = 'default-collab-editor'; // You can leave this as is.
                 }
             });
             
+            // Chat listener
             const msgRef = collection(db, `artifacts/${appId}/public/data/rooms`, roomId, 'messages');
             unsubscribeChat = onSnapshot(query(msgRef, orderBy("timestamp")), s => {
-                dom.chatMessages.innerHTML = '';
+                dom.chatMessages.innerHTML = ''; // THIS IS THE FIX
                 s.forEach(d => renderMessage(d.data()));
                 dom.chatMessages.scrollTop = dom.chatMessages.scrollHeight;
             });
             
+            // Code change listeners
             htmlEditor.on('change', () => handleCodeChange('html', htmlEditor.getValue()));
             cssEditor.on('change', () => handleCodeChange('css', cssEditor.getValue()));
             jsEditor.on('change', () => handleCodeChange('js', jsEditor.getValue()));
             
+            // General event listeners
             dom.chatForm.addEventListener('submit', handleSendMessage);
             dom.leaveBtn.addEventListener('click', leaveRoom);
             dom.clearConsoleBtn.addEventListener('click', () => dom.console.innerHTML = '');
@@ -496,20 +501,15 @@ const appId = 'default-collab-editor'; // You can leave this as is.
 
         function toggleChat() {
             isChatOpen = !isChatOpen;
-            dom.chatPanel.style.display = isChatOpen ? 'flex' : 'none';
-            dom.resizer.style.display = isChatOpen ? 'none' : 'block';
 
             if (isChatOpen) {
-                // Rearrange for chat view
-                dom.contentWrapper.insertBefore(dom.chatPanel, dom.resizer.nextSibling); 
+                dom.chatPanel.style.display = 'flex';
+                dom.chatPanel.style.flexBasis = '300px';
+                dom.resizer.style.display = 'none';
                 dom.editorPanel.style.flexBasis = '50%';
                 dom.outputPanel.style.flexBasis = '50%';
-                dom.chatPanel.style.flexBasis = '300px'; 
-                dom.resizer.style.display = 'none'; 
             } else {
-                // Restore normal view
-                dom.editorPanel.style.flexBasis = '50%';
-                dom.outputPanel.style.flexBasis = '50%';
+                dom.chatPanel.style.display = 'none';
                 dom.chatPanel.style.flexBasis = '0px';
                 dom.resizer.style.display = 'block';
             }
@@ -541,7 +541,8 @@ const appId = 'default-collab-editor'; // You can leave this as is.
 
         async function handleDownload() {
             const zip = new JSZip();
-            zip.file("index.html", `<!DOCTYPE html>\n<html>\n<head>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n${htmlEditor.getValue()}\n  <script src="script.js"><\/script>\n</body>\n</html>`);
+            const htmlContent = `<!DOCTYPE html>\n<html>\n<head>\n  <link rel="stylesheet" href="style.css">\n</head>\n<body>\n${htmlEditor.getValue()}\n  <script src="script.js"><\/script>\n</body>\n</html>`;
+            zip.file("index.html", htmlContent);
             zip.file("style.css", cssEditor.getValue());
             zip.file("script.js", jsEditor.getValue());
             const content = await zip.generateAsync({ type: "blob" });
@@ -568,27 +569,46 @@ const appId = 'default-collab-editor'; // You can leave this as is.
         }
 
         async function leaveRoom() {
+            if (unsubscribeRoom) {
+                unsubscribeRoom();
+                unsubscribeRoom = null;
+            }
+            if (unsubscribeChat) {
+                unsubscribeChat();
+                unsubscribeChat = null;
+            }
+
             if (currentRoomId && localUser) {
                 try {
                     const roomRef = doc(db, `artifacts/${appId}/public/data/rooms`, currentRoomId);
-                    await updateDoc(roomRef, { participants: arrayRemove(localUser) });
+                    // Ensure we don't try to update a document we're no longer listening to
+                    const docSnap = await getDoc(roomRef);
+                    if (docSnap.exists()) {
+                         await updateDoc(roomRef, { participants: arrayRemove(localUser) });
+                    }
                 } catch (e) {
                     console.error("Error removing participant:", e);
                 }
             }
-            if (unsubscribeRoom) unsubscribeRoom();
-            if (unsubscribeChat) unsubscribeChat();
-            unsubscribeRoom = unsubscribeChat = null;
-            currentRoomId = localUser = null;
+            
+            currentRoomId = null;
+            localUser = null;
             window.location.hash = '';
+            
+            // It's safer to remove specific listeners rather than all on the window
+            // but for this app's scope, this is acceptable on cleanup.
             window.removeEventListener('beforeunload', handleBeforeUnload);
             window.removeEventListener('message', handleConsoleMessage);
+            
             showView('home');
         }
 
         function handleBeforeUnload() {
+            // This is a synchronous operation, so we can't await leaveRoom.
+            // Firestore handles offline updates gracefully.
             if (currentRoomId && localUser) {
-                leaveRoom();
+                 const roomRef = doc(db, `artifacts/${appId}/public/data/rooms`, currentRoomId);
+                 updateDoc(roomRef, { participants: arrayRemove(localUser) });
             }
         }
         
@@ -605,5 +625,4 @@ const appId = 'default-collab-editor'; // You can leave this as is.
     </script>
 </body>
 </html>
-
 
