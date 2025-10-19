@@ -2,6 +2,7 @@
 *A free, real-time collaborative IDE to code, chat, and learn. No sign-up required—create a private room for your team, or make it public and invite the world to code with you.*
 
 [Try the Live App](https://codecollabwars.web.app/)
+
 [Watch Video](https://youtu.be/LXYQv2Ou2cA)
 
 ![Preview](/preview.png)
